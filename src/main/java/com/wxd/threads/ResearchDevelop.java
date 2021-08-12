@@ -7,6 +7,11 @@ import com.wxd.bean.RDProject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
 /**
  * 线程：后端开发人员
  */
@@ -25,6 +30,15 @@ public class ResearchDevelop implements Runnable{
     @Autowired
     Problem problem;
 
+    FileOutputStream fileOutputStream;
+
+    OutputStreamWriter outputStreamWriter;
+
+    public ResearchDevelop() throws FileNotFoundException {
+        this.fileOutputStream = new FileOutputStream("files/rd_project.txt",true);
+        this.outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+    }
+
     @Override
     public void run() {
 
@@ -32,12 +46,18 @@ public class ResearchDevelop implements Runnable{
             webCompany.getCountDownLatch().await();
             this.work();
             this.modify();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                outputStreamWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void work() throws InterruptedException {
+    public void work() throws InterruptedException, IOException {
 
         while (!prd.getContent().toString().endsWith("end")){
             Thread.sleep(1000);
@@ -46,6 +66,9 @@ public class ResearchDevelop implements Runnable{
         synchronized (rdProject){
             rdProject.rdCode.append("后端工程师："+Thread.currentThread().getName()+"的代码；");
         }
+
+        outputStreamWriter.write("后端工程师："+Thread.currentThread().getName()+"的代码；\r\n");
+        outputStreamWriter.flush();
     }
 
     public void modify() throws InterruptedException {

@@ -5,6 +5,10 @@ import com.wxd.bean.Prd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * 线程：交互设计师
  */
@@ -18,6 +22,12 @@ public class UserExperience implements Runnable{
 
     @Autowired
     Prd prd;
+
+    FileOutputStream fileOutputStream;
+
+    public UserExperience() throws FileNotFoundException {
+        this.fileOutputStream = new FileOutputStream("files/ui_project.txt");
+    }
 
     public boolean isStartFlag() {
         return startFlag;
@@ -35,6 +45,12 @@ public class UserExperience implements Runnable{
             this.work();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

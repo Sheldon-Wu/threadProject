@@ -6,6 +6,8 @@ import com.wxd.bean.UIProject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
+
 /**
  * 线程：视觉设计师
  */
@@ -24,6 +26,18 @@ public class UserInterface implements Runnable{
     @Autowired
     Problem problem;
 
+    FileOutputStream fileOutputStream;
+
+    OutputStreamWriter outputStreamWriter;
+
+    BufferedWriter bufferedWriter;
+
+    public UserInterface() throws FileNotFoundException {
+        this.fileOutputStream = new FileOutputStream("files/ui_project.txt",true);
+        this.outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+        this.bufferedWriter = new BufferedWriter(outputStreamWriter);
+    }
+
     @Override
     public void run() {
 
@@ -31,18 +45,31 @@ public class UserInterface implements Runnable{
             webCompany.getCountDownLatch().await();
             this.work();
             this.modify();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void work() throws InterruptedException {
+    public void work() throws InterruptedException, IOException {
         while (!userExperience.isStartFlag()){
             Thread.sleep(1000);
         }
         System.out.println("前端工程师："+Thread.currentThread().getName()+"开始工作。。。");
         synchronized (uiProject){
             uiProject.uiCode.append("前端工程师："+Thread.currentThread().getName()+"的代码；");
+        }
+
+        try {
+            bufferedWriter.write("前端工程师："+Thread.currentThread().getName()+"的代码；\r\n");
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
