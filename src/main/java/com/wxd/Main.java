@@ -5,13 +5,19 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        FileInputStream fileInputStream;
+        InputStreamReader inputStreamReader;
+        BufferedReader bufferedReader;
 
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
 
@@ -53,5 +59,37 @@ public class Main {
 
         //关闭连接，停止接收新任务，原来的任务继续执行
         service.shutdown();
+
+        TimeUnit.SECONDS.sleep(10);
+
+        fileInputStream = new FileInputStream("files/demand.txt");
+        inputStreamReader = new InputStreamReader(fileInputStream);
+        char[] buffer = new char[48];
+        int d;
+        while ((d = inputStreamReader.read(buffer, 0, buffer.length))!= -1){
+            String s = new String(buffer,0,d);
+            System.out.println(s);
+        }
+
+        fileInputStream = new FileInputStream("files/ui_project.txt");
+        inputStreamReader = new InputStreamReader(fileInputStream);
+        bufferedReader = new BufferedReader(inputStreamReader);
+        String line;
+        while((line = bufferedReader.readLine())!=null){
+            System.out.println(line);   //一次读一行，并不能识别换行
+        }
+
+        fileInputStream = new FileInputStream("files/rd_project.txt");
+        inputStreamReader = new InputStreamReader(fileInputStream);
+        char[] buffer2 = new char[2048];
+        int d2;
+        while ((d2 = inputStreamReader.read(buffer2, 0, buffer2.length))!= -1){
+            String s2 = new String(buffer2,0,d2);
+            System.out.println(s2);
+        }
+
+        fileInputStream.close();
+        inputStreamReader.close();
+        bufferedReader.close();
     }
 }

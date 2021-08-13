@@ -65,12 +65,8 @@ public class UserInterface implements Runnable{
             uiProject.uiCode.append("前端工程师："+Thread.currentThread().getName()+"的代码；");
         }
 
-        try {
-            bufferedWriter.write("前端工程师："+Thread.currentThread().getName()+"的代码；\r\n");
-            bufferedWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        bufferedWriter.write("前端工程师："+Thread.currentThread().getName()+"的代码；\r\n");
+        bufferedWriter.flush();
     }
 
     public void modify() throws InterruptedException {
